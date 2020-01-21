@@ -1,0 +1,127 @@
+.app-header {
+	@include d-flex($align-items: center, $justify-content: space-between);
+	padding:  15px var(--side-indent);
+	background-color: var(--primary);
+	color: var(--white);
+	box-shadow: 0 0 30px 5px var(--primary);
+
+
+	.toggle-button{
+		cursor: pointer;
+		
+		&-element {
+			display: block;
+			width: 25px;
+			height: 3px;
+			background-color: var(--white);
+			transition: 0.2s;
+			&:nth-of-type(2){
+				width: 18px;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+		}
+		&:hover {
+			.toggle-button-element{
+				background-color: var(--text-color-900);
+
+			}
+		}
+
+		&.toggle-active{
+
+			.toggle-button-element:nth-of-type(1){
+				transform: translatey(8px) rotate(45deg);
+
+			}
+			.toggle-button-element:nth-of-type(2){
+				opacity: 0;
+			}
+			.toggle-button-element:nth-of-type(3){
+				transform: translatey(-8px) rotate(-45deg);
+				
+			}
+		}
+
+	}
+	.user-info{
+		@include d-flex($align-items: center);
+	}
+	.acc-info{
+		@include d-flex($align-items: center);
+		
+		.acc-text{
+			position: relative;
+			cursor: pointer;
+
+			.change-theme{
+				padding:10px;
+				background-color: var(--white);
+				position: absolute;
+				top: calc(100% + 20px);
+				border-radius: 4px;
+				color: var(--text-color-700);
+				opacity: 0;
+				transition: 0.2s;
+				visibility: hidden; /*разве position: absolute; не решает ету проблему?*/
+				left: 50%;
+				transform: translate(-50%, 5px);
+				
+				li{
+					@include d-flex($align-items: center);
+					white-space: nowrap;
+				}
+
+				&.active{
+					opacity: 1;
+					visibility: visible;
+					transform: translate(-50%, 0);
+					}
+				
+				.toggle-box{
+					margin-left: 15px;
+					min-width: 35px;
+					height: 20px;
+					position: relative;
+					border-radius: 20px;
+					background-color: var(--text-color-300);
+					padding: 2px;
+					transition: 0.4s;
+					cursor: pointer;
+					.toggle-circle{
+						display: inline-block;
+						width:50%;
+						height: 100%;
+						border-radius: 50%;
+						background-color: var(--app-background);
+						position: relative;
+						transition: 0.3s;
+						}
+					&.toggle-active{
+						transition: 0.4s;
+						background-color: var(--light-blue);
+							.toggle-circle{
+								background-color: var(--text-color-300);
+								left: 50%;
+							}
+					}
+				}
+				}
+		}
+
+		.acc-status {
+			@include d-flex($align-items: center, $justify-content: space-between);
+			color: var(--text-color-700);
+			letter-spacing: 0.1em;
+			line-height: 15px;
+		}
+		.avatar{
+			margin-right: 26px;
+			min-width: 40px;
+		}
+	}
+	.search{
+		font-size: 20px;
+		margin-right: 25px;
+	}
+}

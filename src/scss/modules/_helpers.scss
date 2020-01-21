@@ -1,0 +1,31 @@
+// Flex-box-mixin
+@mixin d-flex($flex-d: null, $justify-content: null, $align-items: null, $flex-wrap: null) {
+	display: flex;
+	flex-direction: $flex-d;
+	justify-content: $justify-content;
+	align-items: $align-items;
+	flex-wrap: $flex-wrap;
+}
+@mixin status-structyre() {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	border-color: transparent;
+}
+@mixin status-structyre-big() {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border-color: transparent;
+}
+
+@mixin status-online(){
+	background-color: var(--cian);
+	box-shadow: 0 2px 4px 0 rgba(81, 218, 207, 1);
+}
+@mixin status-off-line(){
+	background-color: var(--light-blue);
+	box-shadow: 0 0px 4px 0 rgba(201, 214, 223, 1);
+}
