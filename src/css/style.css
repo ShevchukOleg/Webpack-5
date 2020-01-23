@@ -1,6 +1,19 @@
+/* Import of fonts */
+@import "./fonts.css";
+/* Import css lib */
+@import "~normalize.css";
 
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 p {
-  font-family: "Arial";
+  font-family: "Roboto", sans-serif;
   font-size: 28px;
-  color: #4da876
+  color: #5d8cb8;
+}
+img {
+  height: 250px;
+  width: 360px;
 }
