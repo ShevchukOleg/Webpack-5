@@ -10,6 +10,7 @@ import SomeImage from "../assets/images/DesktopWallpaper.jpg"
 
 //Styles
 require('../css/style.css');
+import '../scss/style.scss';
 
 console.log("JSON file content:", json);
 
@@ -21,3 +22,16 @@ console.log(img);
 document.body.appendChild(img);
 
 $('pre').html("Jquery works!");
+
+// new JS featuters
+async function start() {
+  return await Promise.resolve("Async is working");
+}
+
+start().then(console.log);
+
+class Util {
+  static id = Date.now();
+}
+
+console.log("Id:", Util.id);
