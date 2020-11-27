@@ -2,17 +2,20 @@
 @import "./fonts.css";
 /* Import css lib */
 @import "~normalize.css";
+/* Import scss lib */
+
+
 
 body {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-p {
+/* p {
   font-family: "Roboto", sans-serif;
   font-size: 28px;
   color: #5d8cb8;
-}
+} */
 img {
   height: 250px;
   width: 360px;

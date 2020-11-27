@@ -6,10 +6,12 @@ import componentOne from "@components/component_one";
 import json from "./JSON/test.json"
 
 // Images
-import SomeImage from "../assets/images/DesktopWallpaper.jpg"
+import SomeImage from "../assets/resource/images/DesktopWallpaper.jpg"
 
-//Styles
-require('../css/style.css');
+//inputs
+import html from '../index.html';
+
+import '../css/style.css';
 import '../scss/style.scss';
 
 console.log("JSON file content:", json);

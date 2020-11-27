@@ -1,16 +1,17 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-console.log("Development:", isDevelopment);
+const isDev = process.env.NODE_ENV === 'development';
+console.log("Development:", isDev);
 
 // Використання оптимізацій коду при ствроренні бандлу в продакшн
 function optimization() {
@@ -19,17 +20,19 @@ function optimization() {
       chunks: "all"
     }
   };
-  if (!isDevelopment) {
+  if (!isDev) {
     optimizationOptions.minimizer = [
+      new CssMinimizerPlugin(),
       new TerserJSPlugin({}),
-      new OptimizeCSSAssetsPlugin({})
+      // new OptimizeCSSAssetsPlugin({}),
+
     ]
   }
   return optimizationOptions
 }
 // Автоматична підстановка потрібного типу імені файлу
 function filenameHashConfig(ext) {
-  return isDevelopment ? `[name].${ext}` : `[name]-[hash].${ext}`;
+  return isDev ? `[name].${ext}` : `[name].[contenthash].${ext}`;
 }
 
 // конфігурує роботу лодерів обробки стилів
@@ -38,14 +41,16 @@ function stylesLoadersConfig(mainLoader) {
     {
       loader: MiniCssExtractPlugin.loader,
       options: {
-        hmr: isDevelopment,
-        reloadAll: true
-      }
+        // hmr: true,
+        publicPath: (resourcePath, context) => {
+          return path.relative(path.dirname(resourcePath), context) + '/';
+        },
+      },
     },
     'css-loader'
   ]
 
-  if(mainLoader) {
+  if (mainLoader) {
     loaders.push(mainLoader);
   }
 
@@ -62,7 +67,7 @@ function stylesLoadersConfig(mainLoader) {
 //       }
 //     }
 //   ]
-//   if (isDevelopment) {
+//   if (isDev) {
 //     loaders.push()
 //   }
 // }
@@ -70,33 +75,44 @@ function stylesLoadersConfig(mainLoader) {
 // керування плагінами
 function plugins() {
   const basePlagins = [
-    new CleanWebpackPlugin(),
+    // Видаляє непотрібні фали попередніх бандлів
+    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     //! Цей плагін модифікує тайтл сайту!!!
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './index.html',
-      title: 'Webpack + scss',
+      // template: 'src/index.html',
+      template: path.resolve(__dirname, './src/index.html'),
+      // filename: './index.html',
+      title: isDev ? 'Dev' : 'Webpack5 bundle',
       minify: {
-        collapseWhitespace: !isDevelopment
+        collapseWhitespace: !isDev,
+        removeComments: !isDev,
       }
-
     }),
 
     new MiniCssExtractPlugin({ filename: filenameHashConfig("css") }),
-    new CopyPlugin([
-      { from: path.resolve(__dirname, './src/assets/icons'), to: path.resolve(__dirname, './dist/assets/icons') },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, './src/assets'), to: path.resolve(__dirname, './dist/assets') },
+      ]
+    }),
+    // new webpack.HotModuleReplacementPlugin(),
   ];
 
-  if(!isDevelopment) {
+  if (!isDev) {
     basePlagins.push(new BundleAnalyzerPlugin())
   }
+  // Якщо використовуємо webpack-dev-server активація HMR не потрібна
+  // else {
+  //   plugins.push(new webpack.HotModuleReplacementPlugin());
+  // }
 
   return basePlagins;
 }
 // об'экт налаштувань WEBpack
 module.exports = {
   context: path.resolve(__dirname, 'src'),
+  // визнечення базового режиму роботи
+  mode: "development",
   // точка входу у вигляді об'єкту з основним скриптом у який імпортяться модулі та окремо бібліотеки
   entry: {
     main: ['@babel/polyfill', './js/app.js'],
@@ -105,8 +121,8 @@ module.exports = {
   // вивід результату
   output: {
     filename: filenameHashConfig("js"),
-    // filename: '[name].bundle-[hash].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'assets/[hash][ext][query]'
   },
 
   resolve: {
@@ -118,10 +134,13 @@ module.exports = {
     }
   },
 
-  mode: "development",
 
   module: {
     rules: [
+      {
+        test: /\.html$/i,
+        loader: 'html-loader',
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -145,7 +164,7 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.css$/i,
         use: stylesLoadersConfig(),
       },
       {
@@ -153,26 +172,30 @@ module.exports = {
         use: stylesLoadersConfig('sass-loader'),
       },
       {
-        test: /.(png|jpg|gif|svg)$/,
-        use: ['file-loader']
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+        // use: ['file-loader']
       },
       {
         test: /.(ttf|woff|woff2|eot)$/,
-        use: ['file-loader']
+        type: 'asset/resource',
+        // use: ['file-loader']
       }
     ]
   },
 
   optimization: optimization(),
 
-  devtool: isDevelopment ? 'source-map' : '',
+  // devtool: isDev ? 'source-map' : '',
+  devtool: 'inline-source-map',
 
   plugins: plugins(),
 
   devServer: {
-    // contentBase: path.join(__dirname, 'dist'),
+    historyApiFallback: true,
+    contentBase: path.resolve(__dirname, 'dist'),
     compress: true,
-    port: 8080,
-    hot: isDevelopment
+    hot: true,
+    open: true,
   },
 };

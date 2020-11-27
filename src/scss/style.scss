@@ -6,3 +6,11 @@
 @import "./modules/global.scss";
 @import "./modules/app-header.scss";
 @import "./modules/main-content.scss";
+
+p {
+  font: {
+    family: 'Roboto';
+    size: 18px;
+  };
+  color: blue !important;
+}
